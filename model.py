@@ -22,8 +22,6 @@ class Farm(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     farmer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     farm_name = db.Column(db.String, nullable=False)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-    updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
     livestocks = db.relationship("Livestock", backref='farms')
     crops = db.relationship("Crops", backref='farms')
@@ -66,7 +64,7 @@ class Equipment(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     farm_id = db.Column(db.Integer, db.ForeignKey('farms.id'))
     equipment_type = db.Column(db.String, nullable=False)
-    maintenance_schedule = db.Column(db.String, nullable=True)
+    maintenance_schedule = db.Column(db.Date, nullable=True)
    
    
 
