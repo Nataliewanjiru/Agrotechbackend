@@ -12,6 +12,7 @@ flask-migrate = "*"
 gunicorn = "*"
 python-dotenv = "*"
 psycopg2 = "*"
+alembic = "*"
 
 [dev-packages]
 
