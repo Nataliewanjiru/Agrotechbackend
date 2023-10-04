@@ -10,6 +10,7 @@ class User(db.Model):
     last_name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False)
     password=db.Column(db.String, nullable=False)
+    role= db.Column(db.String, nullable=False)
 
     advisors = db.relationship("Advisor", backref='users')
     farms = db.relationship("Farm", backref='users')

@@ -9,7 +9,7 @@ load_dotenv()
 from model import * 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("dburl")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('dburl')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
 
