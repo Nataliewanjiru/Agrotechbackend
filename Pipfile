@@ -9,6 +9,8 @@ flask = "*"
 flask-sqlalchemy = "*"
 migrate = "*"
 flask-migrate = "*"
+gunicorn = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

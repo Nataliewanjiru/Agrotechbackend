@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "71e52bf7fb7ea1a782df15d147c68b230b4db5a361dcd75172fe8c5e2aa7df7a"
+            "sha256": "81e3decb897f1ac2968c58ab1a3718f7d81696c6d114f439dcda069481cf94c7"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -130,12 +130,20 @@
             "markers": "platform_machine == 'aarch64' or (platform_machine == 'ppc64le' or (platform_machine == 'x86_64' or (platform_machine == 'amd64' or (platform_machine == 'AMD64' or (platform_machine == 'win32' or platform_machine == 'WIN32')))))",
             "version": "==3.0.0"
         },
+        "gunicorn": {
+            "hashes": [
+                "sha256:3213aa5e8c24949e792bcacfc176fef362e7aac80b76c56f6b5122bf350722f0",
+                "sha256:88ec8bff1d634f98e61b9f65bc4bf3cd918a90806c6f5c48bc5603849ec81033"
+            ],
+            "index": "pypi",
+            "version": "==21.2.0"
+        },
         "importlib-metadata": {
             "hashes": [
                 "sha256:3ebb78df84a805d7698245025b975d9d67053cd94c79245ba4b3eb694abe68bb",
                 "sha256:dbace7892d8c0c4ac1ad096662232f831d4e64f4c4545bd53016a3e9d4654743"
             ],
-            "markers": "python_version < '3.9'",
+            "markers": "python_version < '3.10'",
             "version": "==6.8.0"
         },
         "importlib-resources": {
@@ -238,6 +246,21 @@
             ],
             "index": "pypi",
             "version": "==0.3.8"
+        },
+        "packaging": {
+            "hashes": [
+                "sha256:048fb0e9405036518eaaf48a55953c750c11e1a1b68e0dd1a9d62ed0c092cfc5",
+                "sha256:8c491190033a9af7e1d931d0b5dacc2ef47509b34dd0de67ed209b5203fc88c7"
+            ],
+            "version": "==23.2"
+        },
+        "python-dotenv": {
+            "hashes": [
+                "sha256:a8df96034aae6d2d50a4ebe8216326c61c3eb64836776504fcca410e5937a3ba",
+                "sha256:f5971a9226b701070a4bf2c38c89e5a3f0d64de8debda981d1db98583009122a"
+            ],
+            "index": "pypi",
+            "version": "==1.0.0"
         },
         "sqlalchemy": {
             "hashes": [
