@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -9,8 +10,8 @@ class User(db.Model):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False)
-    password=db.Column(db.String, nullable=False)
-    role= db.Column(db.String, nullable=False)
+    password = db.Column(db.String, nullable=False)
+    role = db.Column(db.String, nullable=False)
 
     advisors = db.relationship("Advisor", backref='users')
     farms = db.relationship("Farm", backref='users')
@@ -30,18 +31,15 @@ class Farm(db.Model):
     labourers = db.relationship("Labourers", backref='farms')
 
 
-
 class Livestock(db.Model):
     __tablename__ = 'livestocks'
 
     id = db.Column(db.Integer, primary_key=True)
     farm_id = db.Column(db.Integer, db.ForeignKey('farms.id'))
-    livestock_type = db.Column(db.String, nullable= False)
+    livestock_type = db.Column(db.String, nullable=False)
     weaning_date = db.Column(db.Date, nullable=False)
     slaughter_date = db.Column(db.Date, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
-   
-   
 
 
 class Crops (db.Model):
@@ -54,41 +52,35 @@ class Crops (db.Model):
     weeding = db.Column(db.Date, nullable=False)
     harvest = db.Column(db.Date, nullable=False)
     acreage = db.Column(db.Date, nullable=False)
-   
-   
 
 
 class Equipment(db.Model):
     __tablename__ = 'equipments'
 
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key=True)
     farm_id = db.Column(db.Integer, db.ForeignKey('farms.id'))
     equipment_type = db.Column(db.String, nullable=False)
-    maintenance_schedule = db.Column(db.Date, nullable=True)
-   
-   
+    maintenance_schedule = db.Column(db.String, nullable=True)
+
 
 class Finance(db.Model):
     __tablename__ = 'finances'
 
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key=True)
     farm_id = db.Column(db.Integer, db.ForeignKey('farms.id'))
     income = db.Column(db.Integer, nullable=False)
     budget = db.Column(db.Integer, nullable=False)
     loss = db.Column(db.Integer, nullable=True)
-   
-   
+
 
 class Labourers(db.Model):
     __tablename__ = 'labours'
 
-    id = db.Column(db.Integer,primary_key=True )
+    id = db.Column(db.Integer, primary_key=True)
     farm_id = db.Column(db.Integer, db.ForeignKey('farms.id'))
     labour_allocation = db.Column(db.String, nullable=False)
     work_schedule = db.Column(db.String, nullable=False)
-   
-   
-   
+
 
 class Advisor(db.Model):
     __tablename__ = 'advisors'
@@ -98,6 +90,4 @@ class Advisor(db.Model):
     username = db.Column(db.String, nullable=False)
     specialization = db.Column(db.String, nullable=False)
     phonenumber = db.Column(db.Integer, nullable=False)
-    location = db.Column(db.String, nullable = False)
-  
-  
+    location = db.Column(db.String, nullable=False)
