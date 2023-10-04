@@ -1,8 +1,8 @@
 from faker import Faker
 from datetime import datetime
 from random import choice, randint
-from model import User, Farm, Livestock, Crops, Equipment, Finance, Labourers, Advisor
-from app import app, db
+from app.modelodel import User, Farm, Livestock, Crops, Equipment, Finance, Labourers, Advisor
+from app.app import app, db
 
 fake = Faker()
 
