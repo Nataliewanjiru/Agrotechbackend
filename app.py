@@ -280,6 +280,24 @@ def create_finance():
     return jsonify({'message': 'Finance record created successfully'}), 201
 
 
+@app.route('/crops', methods=['GET'])
+def get_crops_by_farm_id(farm_id):
+    crops = Crops.query.filter_by(farm_id=farm_id).all()
+
+    crop_list = []
+    for crop in crops:
+        crop_data = {
+            'id': crop.id,
+            'farm_id': crop.farm_id,
+            'crop_type': crop.crop_type,
+            'planting': crop.planting.strftime("%Y-%m-%d"),  
+            'weeding': crop.weeding.strftime("%Y-%m-%d"),    
+            'harvest': crop.harvest.strftime("%Y-%m-%d"),    
+            'acreage': crop.acreage
+        }
+        crop_list.append(crop_data)
+
+    return jsonify(crop_list)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
