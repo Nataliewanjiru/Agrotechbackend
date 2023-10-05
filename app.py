@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, redirect, render_template, request, jsonify
+from flask import Flask, request, jsonify
 import os
 
 
@@ -16,7 +16,7 @@ load_dotenv()
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///app.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("dburl")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 CORS(app)
@@ -101,25 +101,23 @@ def login():
 
 ################################################################
 # GET AND POST methods for the farm and user information
-@app.route('/farms', methods=['GET'])
+@app.route('/farms')
 def get_all_farms():
     farms = Farm.query.all()
     farm_list = []
-
     for farm in farms:
         farm_data = {
             'id': farm.id,
             'farmer_id': farm.farmer_id,
-            'farm_name': farm.farm_name,
-            'created_at': farm.created_at.strftime('%Y-%m-%d %H:%M:%S')if farm.created_at else None,
-            'updated_at': farm.updated_at.strftime('%Y-%m-%d %H:%M:%S')if farm.updated_at else None
+            'farm_name': farm.farm_name
         }
         farm_list.append(farm_data)
 
     return jsonify(farm_list)
 
 
-@app.route('/farms', methods=['POST'])
+
+@app.route('/farm', methods=['POST'])
 def create_farm():
     data = request.get_json()
     if not data:
