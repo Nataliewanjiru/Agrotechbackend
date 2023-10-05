@@ -2,10 +2,12 @@ import re
 from model import *
 from dotenv import load_dotenv
 from flask_migrate import Migrate
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, redirect, render_template, request, jsonify
 import os
-from flask_cors import CORS
+
+
 
 os.environ['FLASK_APP'] = 'app.py'
 
@@ -17,7 +19,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///app.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173/"}})
+CORS(app)
 
 migrate = Migrate(app, db)
 
