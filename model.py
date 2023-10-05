@@ -51,7 +51,7 @@ class Crops (db.Model):
     planting = db.Column(db.Date, nullable=False)
     weeding = db.Column(db.Date, nullable=False)
     harvest = db.Column(db.Date, nullable=False)
-    acreage = db.Column(db.Date, nullable=False)
+    acreage = db.Column(db.Integer, nullable=False)
 
 
 class Equipment(db.Model):
@@ -78,7 +78,7 @@ class Labourers(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     farm_id = db.Column(db.Integer, db.ForeignKey('farms.id'))
-    labour_allocation = db.Column(db.String, nullable=False)
+    labourerName = db.Column(db.String, nullable=False)
     work_schedule = db.Column(db.String, nullable=False)
 
 
