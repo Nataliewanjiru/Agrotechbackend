@@ -26,7 +26,9 @@ class Farm(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     farmer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     farm_name = db.Column(db.String, nullable=False)
-
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    updated_at = db.Column(db.DateTime)
+    
     livestocks = db.relationship("Livestock", backref='farms')
     crops = db.relationship("Crops", backref='farms')
     equipments = db.relationship("Equipment", backref='farms')

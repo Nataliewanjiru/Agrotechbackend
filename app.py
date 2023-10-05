@@ -69,13 +69,14 @@ def create_user():
     if not first_name or not last_name or not email or not password or not role:
         return jsonify({'error': 'Missing required fields'}), 400
 
+    # Hash the password before storing it in the database
     password_hash = generate_password_hash(password, method='sha256')
 
     new_user = User(
         first_name=first_name,
         last_name=last_name,
         email=email,
-        password=password_hash,  
+        password=password_hash,  # Store the hashed password
         role=role
     )
 
@@ -97,8 +98,6 @@ def login():
         return jsonify({"message": "Login successful"})
     else:
         return jsonify({"message": "Login failed"})
-
-
 
 ################################################################
 # GET AND POST methods for the farm and user information
