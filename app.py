@@ -281,8 +281,8 @@ def create_finance():
 
 
 @app.route('/crops', methods=['GET'])
-def get_crops_by_farm_id(farm_id):
-    crops = Crops.query.filter_by(farm_id=farm_id).all()
+def get_crops_by_farm_id():
+    crops = Crops.query.filter_by().all()
 
     crop_list = []
     for crop in crops:
