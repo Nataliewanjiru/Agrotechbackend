@@ -162,34 +162,37 @@ def get_livestock():
         livestock_list.append(livestock_data)
     return jsonify(livestock_list)
 
-
 @app.route('/livestocks', methods=['POST'])
 def create_livestock():
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "Invalid Data"})
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Invalid Data"}), 400
 
-    farm_id = data.get('farm_id')
-    livestock_type = data.get('livestock_type')
-    weaning_date = data.get('weaning_date')
-    slaughter_date = data.get('slaughter_date')
-    quantity = data.get('quantity')
+        farm_id = data.get('farm_id')
+        livestock_type = data.get('livestock_type')
+        weaning_date = data.get('weaning_date')
+        slaughter_date = data.get('slaughter_date')
+        quantity = data.get('quantity')
 
-    if not farm_id or not livestock_type or not weaning_date or not slaughter_date or not quantity:
-        return jsonify({"error": "Missing required field"})
+        if not farm_id or not livestock_type or not weaning_date or not slaughter_date or not quantity:
+            return jsonify({"error": "Missing required field"}), 400
 
-    new_livestock = Livestock(
-        farm_id=farm_id,
-        livestock_type=livestock_type,
-        weaning_date=weaning_date,
-        slaughter_date=slaughter_date,
-        quantity=quantity
-    )
+        new_livestock = Livestock(
+            farm_id=farm_id,
+            livestock_type=livestock_type,
+            weaning_date=weaning_date,
+            slaughter_date=slaughter_date,
+            quantity=quantity
+        )
 
-    db.session.add(new_livestock)
-    db.session.commit()
+        db.session.add(new_livestock)
+        db.session.commit()
 
-    return jsonify({'messsage': "Livestock added successfully"})
+        return jsonify({'message': "Livestock added successfully"}), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 ################################################################
