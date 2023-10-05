@@ -11,10 +11,10 @@ class User(db.Model):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False)
-    password = db.Column(db.String, nullable=False)
+    password = db.Column(db.String(128), nullable=False)
     role = db.Column(db.String, nullable=False)
 
-    password_hash = generate_password_hash(password, method='sha256')
+   
 
     advisors = db.relationship("Advisor", backref='users')
     farms = db.relationship("Farm", backref='users')

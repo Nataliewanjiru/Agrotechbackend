@@ -69,11 +69,13 @@ def create_user():
     if not first_name or not last_name or not email or not password or not role:
         return jsonify({'error': 'Missing required fields'}), 400
 
+    password_hash = generate_password_hash(password, method='sha256')
+
     new_user = User(
         first_name=first_name,
         last_name=last_name,
         email=email,
-        password=password,
+        password=password_hash,  
         role=role
     )
 
@@ -92,7 +94,6 @@ def login():
     user = User.query.filter_by(email=email).first()
 
     if user and check_password_hash(user.password_hash, password):
-        # Password matches, user is authenticated
         return jsonify({"message": "Login successful"})
     else:
         return jsonify({"message": "Login failed"})
@@ -279,52 +280,6 @@ def create_finance():
 
     return jsonify({'message': 'Finance record created successfully'}), 201
 
-
-################################################################
-
-
-@app.route('/login', methods=['POST', 'GET'])
-def login():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-
-        user = User.query.filter_by(email=email).first()
-        if user is None or user.password != password:
-            error_message = "Invalid email or password"
-            return render_template('login.jsx', error_message=error_message)
-
-        return 'Logged in'
-    else:
-        return render_template('login.jsx', messsage="Important")
-
-
-@app.route('/signup', methods=['POST', 'GET'])
-def signup():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        confirmpassword = request.form['confirmpassword']
-
-        if not re.match(email_regex, email):
-            error_message = "Invalid email format"
-            return render_template('signup.jsx', error_message=error_message)
-
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
-            error_message = "Email is already registered"
-            return render_template('signup.jsx', error_message=error_message)
-
-        if password != confirmpassword:
-            error_message = "Passwords do not match"
-            return render_template('signup.jsx', error_message=error_message)
-
-        new_user = User(email=email, password=password)
-        db.session.add(new_user)
-        db.session.commit()
-        return redirect('/')
-
-    return render_template('signup.jsx')
 
 
 if __name__ == '__main__':
