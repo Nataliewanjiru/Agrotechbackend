@@ -303,6 +303,7 @@ def get_crops_by_farm_id():
 
     return jsonify(crop_list)
 
+
 @app.route('/advisors')
 def get_advisors():
     advisors = Advisor.query.all()
@@ -311,11 +312,10 @@ def get_advisors():
     for advisor in advisors:
         advisor_data = {
             'id': advisor.id,
-            'farm_id': advisor.farm_id,
-            'name': advisor.name,
-            'email': advisor.email,
-            'phone': advisor.phone,
-            'role': advisor.role
+            'name': advisor.username,
+            'field': advisor.specialization,
+            'phone': advisor.phonenumber,
+            'location':advisor.location
         }
         advisor_list.append(advisor_data)
 
