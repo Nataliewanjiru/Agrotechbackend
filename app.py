@@ -162,6 +162,7 @@ def get_livestock():
         livestock_list.append(livestock_data)
     return jsonify(livestock_list)
 
+
 @app.route('/livestocks', methods=['POST'])
 def create_livestock():
     try:
@@ -301,6 +302,25 @@ def get_crops_by_farm_id():
         crop_list.append(crop_data)
 
     return jsonify(crop_list)
+
+@app.route('/advisors')
+def get_advisors():
+    advisors = Advisor.query.all()
+    advisor_list = []
+
+    for advisor in advisors:
+        advisor_data = {
+            'id': advisor.id,
+            'farm_id': advisor.farm_id,
+            'name': advisor.name,
+            'email': advisor.email,
+            'phone': advisor.phone,
+            'role': advisor.role
+        }
+        advisor_list.append(advisor_data)
+
+    return jsonify(advisor_list)
+    
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
