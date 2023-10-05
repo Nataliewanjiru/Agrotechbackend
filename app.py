@@ -54,7 +54,7 @@ def get_all_users():
     return jsonify(user_list)
 
 
-@app.route('/user', methods=['POST'])
+@app.route('/register', methods=['POST'])
 def create_user():
     data = request.get_json()
     if not data:
@@ -81,6 +81,22 @@ def create_user():
     db.session.commit()
 
     return jsonify({'message': 'User created successfully'}), 201
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+
+    user = User.query.filter_by(email=email).first()
+
+    if user and check_password_hash(user.password_hash, password):
+        # Password matches, user is authenticated
+        return jsonify({"message": "Login successful"})
+    else:
+        return jsonify({"message": "Login failed"})
+
 
 
 ################################################################

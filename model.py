@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
 
@@ -12,6 +13,8 @@ class User(db.Model):
     email = db.Column(db.String, nullable=False)
     password = db.Column(db.String, nullable=False)
     role = db.Column(db.String, nullable=False)
+
+    password_hash = generate_password_hash(password, method='sha256')
 
     advisors = db.relationship("Advisor", backref='users')
     farms = db.relationship("Farm", backref='users')
