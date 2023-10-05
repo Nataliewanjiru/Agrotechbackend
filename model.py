@@ -73,15 +73,6 @@ class Finance(db.Model):
     loss = db.Column(db.Integer, nullable=True)
 
 
-class Labourers(db.Model):
-    __tablename__ = 'labours'
-
-    id = db.Column(db.Integer, primary_key=True)
-    farm_id = db.Column(db.Integer, db.ForeignKey('farms.id'))
-    labourerName = db.Column(db.String, nullable=False)
-    work_schedule = db.Column(db.String, nullable=False)
-
-
 class Advisor(db.Model):
     __tablename__ = 'advisors'
 
