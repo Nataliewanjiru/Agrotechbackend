@@ -161,7 +161,7 @@ def get_livestock():
     return jsonify(livestock_list)
 
 
-@app.route('/livestocks', methods=['POST'])
+@app.route('/livestock', methods=['POST'])
 def create_livestock():
     try:
         data = request.get_json()
