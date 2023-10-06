@@ -19,7 +19,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///app.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-CORS(app, resources={r"/user": {"origins": "https://agrotechproject.vercel.app"}})
+CORS(app)
 
 migrate = Migrate(app, db)
 
