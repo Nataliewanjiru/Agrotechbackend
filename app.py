@@ -163,7 +163,6 @@ def get_livestock():
 
 @app.route('/livestock', methods=['POST'])
 def create_livestock():
-    try:
         data = request.get_json()
         if not data:
             return jsonify({"error": "Invalid Data"}), 400
@@ -190,8 +189,6 @@ def create_livestock():
 
         return jsonify({'message': "Livestock added successfully"}), 201
 
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 
 ################################################################
