@@ -13,3 +13,7 @@
 
   # To Execute
   - Use the link in the about
+ 
+# Link to frontend project
+
+- https://github.com/Nataliewanjiru/Agrotechproject.git
