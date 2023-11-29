@@ -8,6 +8,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required,get
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
+from datetime import timedelta
 
 
 app = Flask(__name__)
@@ -94,7 +95,7 @@ def login():
 
     if user and check_password_hash(user.password, password):
         login_user(user)
-        access_token = create_access_token(identity=user.id, expires_delta=datetime.timedelta(hours=24))
+        access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=24))
         return jsonify({'access_token': access_token,
                         "userid":current_user.id}), 200
     else:
@@ -236,12 +237,15 @@ def create_livestock():
 
     if not farm_id or not livestock_type or not weaning_date_str or not slaughter_date_str or not quantity:
         return jsonify({"error": "Missing required field"}), 40
+    
+    weaning_object = datetime.strptime(weaning_date_str, '%Y-%m-%d').date()
+    slaughter_object = datetime.strptime(slaughter_date_str, '%Y-%m-%d').date()
 
     new_livestock = Livestock(
         farm_id=farm_id,
         livestock_type=livestock_type,
-        weaning_date=weaning_date_str,
-        slaughter_date=slaughter_date_str,
+        weaning_date=weaning_object,
+        slaughter_date= slaughter_object,
         quantity=quantity,
         image=image,
         information=information
@@ -380,4 +384,4 @@ def get_advisors():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5909)
+    app.run(debug=True, port=5910)
