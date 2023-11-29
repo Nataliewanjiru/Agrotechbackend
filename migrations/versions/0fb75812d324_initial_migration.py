@@ -1,8 +1,8 @@
-"""New database
+"""Initial migration
 
-Revision ID: 22e6fab38062
+Revision ID: 0fb75812d324
 Revises: 
-Create Date: 2023-10-03 21:31:53.953173
+Create Date: 2023-11-26 23:26:54.782511
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '22e6fab38062'
+revision = '0fb75812d324'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,8 +22,10 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('first_name', sa.String(), nullable=False),
     sa.Column('last_name', sa.String(), nullable=False),
+    sa.Column('username', sa.String(), nullable=False),
     sa.Column('email', sa.String(), nullable=False),
-    sa.Column('password', sa.String(), nullable=False),
+    sa.Column('password', sa.String(length=128), nullable=False),
+    sa.Column('role', sa.String(length=8), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('advisors',
@@ -50,7 +52,7 @@ def upgrade():
     sa.Column('planting', sa.Date(), nullable=False),
     sa.Column('weeding', sa.Date(), nullable=False),
     sa.Column('harvest', sa.Date(), nullable=False),
-    sa.Column('acreage', sa.Date(), nullable=False),
+    sa.Column('acreage', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['farm_id'], ['farms.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -74,7 +76,7 @@ def upgrade():
     op.create_table('labours',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('farm_id', sa.Integer(), nullable=True),
-    sa.Column('labour_allocation', sa.String(), nullable=False),
+    sa.Column('labourerName', sa.String(), nullable=False),
     sa.Column('work_schedule', sa.String(), nullable=False),
     sa.ForeignKeyConstraint(['farm_id'], ['farms.id'], ),
     sa.PrimaryKeyConstraint('id')

@@ -1,103 +1,158 @@
-import re
 from model import *
 from dotenv import load_dotenv
-from flask_migrate import Migrate
 from flask_cors import CORS
-from flask import Flask, redirect, render_template, request, jsonify
-import os
-from datetime import datetime
-
-
-
-os.environ['FLASK_APP'] = 'app.py'
-
-
-load_dotenv()
+from flask import Flask,  render_template, request, jsonify
+from sqlalchemy import or_
+import datetime,os
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required,get_jwt_identity
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_migrate import Migrate
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///app.db"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+
+# Configure your Flask app
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = 'your_secret_key_here'
+# Other app configurations...
+
+# Initialize extensions
+migrate = Migrate(app, db)
+login_manager = LoginManager()
+login_manager.init_app(app)
+jwt = JWTManager(app)
 CORS(app)
 
-migrate = Migrate(app, db)
-
+admin.init_app(app)
 db.init_app(app)
 
-# db = SQLAlchemy(app)
-
-email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
 
 
+
+# db = SQLAlchemy(app)#main page route
 @app.route('/')
 def index():
     return "Welcome to our API"
 
-
-# GET and POST methods for the user info
-@app.route('/users', methods=['GET'])
-def get_all_users():
-    users = User.query.all()
-    user_list = []
-
-    for user in users:
-        user_data = {
-            'id': user.id,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email,
-            'role': user.role
-        }
-        user_list.append(user_data)
-
-    return jsonify(user_list)
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(int(user_id))
 
 
-@app.route('/register', methods=['POST'])
-def create_user():
-    data = request.get_json()
-    if not data:
-        return jsonify({'error': 'Invalid JSON data'}), 400
+#Route for register
+@app.route('/usersignup', methods=['POST'])
+def register_user():
+  try:
+       data = request.get_json() 
+       if not data:
+           return jsonify({'error': 'Invalid JSON data'}), 400
+       
+       username = data.get('username')
+       first_name = data.get('first_name')
+       last_name = data.get('last_name')
+       email = data.get('email')
+       password = data.get('password')
+   
+       # Check if the username is already taken
+       existing_user = Users.query.filter_by(username=username).first()
+       if existing_user:
+           response = {'message': 'Username is already taken. Please choose another one.'}
+           return jsonify(response), 400
+       # Create a new user
+       hashed_password = generate_password_hash(password, method='sha256')
+       new_user = Users(first_name=first_name,last_name=last_name,username=username,email=email, password=hashed_password, role="User")
+   
+       # Add the new user to the database
+       db.session.add(new_user)
+       db.session.commit()
+   
+       response = {'message': 'Registration successful!'}
+       return jsonify(response)
+  except Exception as e:
+    print(e)
+    response = {"status": False,"msg": str(e)}
+    return jsonify(response), 500
+  
 
-    first_name = data.get('first_name')
-    last_name = data.get('last_name')
-    email = data.get('email')
-    password = data.get('password')
-    role = data.get('role')
 
-    if not first_name or not last_name or not email or not password or not role:
-        return jsonify({'error': 'Missing required fields'}), 400
-
-    # Hash the password before storing it in the database
-    password_hash = generate_password_hash(password, method='sha256')
-
-    new_user = User(
-        first_name=first_name,
-        last_name=last_name,
-        email=email,
-        password=password_hash,  # Store the hashed password
-        role=role
-    )
-
-    db.session.add(new_user)
-    db.session.commit()
-
-    return jsonify({'message': 'User created successfully'}), 201
-
-
-@app.route('/login', methods=['POST'])
+#Routes for login
+@app.route('/userlogin', methods=['POST'])
 def login():
     data = request.get_json()
+
+    username = data.get('username')
     email = data.get('email')
     password = data.get('password')
 
-    user = User.query.filter_by(email=email).first()
+    if not ((username or email) and password):
+      return jsonify({'error': 'Invalid JSON data'}), 400  
 
-    if user and check_password_hash(user.password_hash, password):
-        return jsonify({"message": "Login successful"})
+    user = Users.query.filter(or_(Users.username == username, Users.email == email)).first()
+
+    if user and check_password_hash(user.password, password):
+        login_user(user)
+        access_token = create_access_token(identity=user.id, expires_delta=datetime.timedelta(hours=24))
+        return jsonify({'access_token': access_token,
+                        "userid":current_user.id}), 200
     else:
-        return jsonify({"message": "Login failed"})
+        return jsonify({'message': 'Invalid username,email or password'}), 401
+
+
+
+# Route for profile
+@app.route('/userprofile', methods=['GET'])
+@jwt_required()
+def profile():
+    user_id = get_jwt_identity()  
+    user = Users.query.get(user_id)
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    fullname = user.first_name + user.last_name
+
+    return jsonify({
+        "name": fullname,
+        "username": user.username,
+        "email": user.email
+    })
+
+
+
+# Route for logout
+@app.route('/userlogout', methods=['GET'])
+@jwt_required()
+def logout():
+    logout_user()
+    return 'Logged out successfully'
+
+@app.route('/deleteaccount', methods=['GET'])
+@jwt_required()
+def delete_account():
+    user_id = get_jwt_identity() 
+
+    if user_id:
+        # Query the database to find the user
+        user = Users.query.get(user_id)
+
+        if user:
+            try:
+                # Delete the user from the database
+                db.session.delete(user)
+                db.session.commit()
+
+                return 'Your account has been deleted.'
+            except Exception as e:
+                db.session.rollback()  
+                return jsonify({'error': 'An error occurred while deleting the user.'}), 500
+        else:
+            return 'User not found.'
+    else:
+        return 'Invalid or expired token.'
+
+
 
 ################################################################
 # GET AND POST methods for the farm and user information
@@ -154,42 +209,48 @@ def get_livestock():
             'livestock_type': livestock.livestock_type,
             'weaning_date': livestock.weaning_date,
             'slaughter_date': livestock.slaughter_date,
-            'quantity': livestock.quantity
+            'quantity': livestock.quantity,
+            "image":livestock.image,
+            "details":livestock.information
         }
 
         livestock_list.append(livestock_data)
     return jsonify(livestock_list)
 
+from flask import jsonify, request
+from datetime import datetime
 
 @app.route('/livestock', methods=['POST'])
 def create_livestock():
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "Invalid Data"}), 400
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid Data"}), 400
+    
+    farm_id = data.get('farm_id')
+    livestock_type = data.get('livestock_type')
+    weaning_date_str = data.get('weaning_date')
+    slaughter_date_str = data.get('slaughter_date')
+    quantity = data.get('quantity')
+    image = data.get("image")
+    information = data.get("information")
 
-        farm_id = data.get('farm_id')
-        livestock_type = data.get('livestock_type')
-        weaning_date = data.get('weaning_date')
-        slaughter_date = data.get('slaughter_date')
-        quantity = data.get('quantity')
+    if not farm_id or not livestock_type or not weaning_date_str or not slaughter_date_str or not quantity:
+        return jsonify({"error": "Missing required field"}), 40
 
-        if not farm_id or not livestock_type or not weaning_date or not slaughter_date or not quantity:
-            return jsonify({"error": "Missing required field"}), 400
+    new_livestock = Livestock(
+        farm_id=farm_id,
+        livestock_type=livestock_type,
+        weaning_date=weaning_date_str,
+        slaughter_date=slaughter_date_str,
+        quantity=quantity,
+        image=image,
+        information=information
+    )
 
-        new_livestock = Livestock(
-            farm_id=farm_id,
-            livestock_type=livestock_type,
-            weaning_date=weaning_date,
-            slaughter_date=slaughter_date,
-            quantity=quantity
-        )
+    db.session.add(new_livestock)
+    db.session.commit()
 
-        db.session.add(new_livestock)
-        db.session.commit()
-
-        return jsonify({'message': "Livestock added successfully"}), 201
-
-
+    return jsonify({'message': "Livestock added successfully"}), 201
 
 ################################################################
 # GET AND PUT methods for the equipment info
@@ -319,4 +380,4 @@ def get_advisors():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5909)
